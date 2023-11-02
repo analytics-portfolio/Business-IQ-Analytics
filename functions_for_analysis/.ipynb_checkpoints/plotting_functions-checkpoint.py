@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 def plot_histogram(column_data, column_name, bin=30):
     """
     Use histogram to plot distribution of a column of float values.
@@ -19,7 +22,42 @@ def plot_histogram(column_data, column_name, bin=30):
     plt.show()
 
 
-def custom_horizontal_boxplot(data, orient='h', color="0.8",
+def plot_horizontal_bar_chart(data, labels, title, x_label, y_label):
+    """
+    Create a horizontal bar chart with customizations.
+
+    Parameters:
+    - data (list): The data values for the bars.
+    - labels (list): Labels for each bar.
+    - title (str): The title of the chart.
+    - x_label (str): Label for the x-axis.
+    - y_label (str): Label for the y-axis.
+
+    Returns:
+    - None (displays the chart).
+    """
+    # Create a horizontal bar chart
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.barh(labels, data, color='skyblue')
+    
+    # Customize the chart
+    ax.set_title(title, fontsize=14, fontweight='bold')
+    ax.set_xlabel(x_label, fontsize=12)
+    ax.set_ylabel(y_label, fontsize=12)
+    ax.invert_yaxis()  # Invert the y-axis to show the highest value at the top
+    
+    # Add data values on the bars
+    for i, v in enumerate(data):
+        ax.text(v + 0.1, i, str(v), color='black', va='center', fontsize=10)
+    
+    # Customize the grid
+    ax.grid(axis='x', linestyle='--', alpha=0.6)
+
+    # Show the chart
+    plt.show()
+
+
+def plot_horizontal_boxplot(data, orient='h', color="0.8",
                               title='', x_label='', y_label='', 
                               x_ticks=None, y_ticks=None, figsize=(10, 6)):
     """
@@ -67,3 +105,46 @@ def custom_horizontal_boxplot(data, orient='h', color="0.8",
     plt.tight_layout()
     
     return plot
+
+def create_location_map(data, zoom_start=12, title="Restaurant Map", icon_color="blue", save_filename="restaurant_map.html"):
+    """
+    Create a location visualization map using Folium.
+
+    Parameters:
+    - data (DataFrame): DataFrame containing location data (latitude, longitude, name).
+    - zoom_start (int): Initial zoom level for the map (default is 12).
+    - title (str): Title for the map (default is "Restaurant Map").
+    - icon_color (str): Marker icon color (default is "blue").
+    - save_filename (str): Filename to save the map as an HTML file (default is "restaurant_map.html").
+
+    Returns:
+    - None
+    """
+
+    # Create the map
+    m = folium.Map(location=[data['latitude'].mean(), 
+                             data['longitude'].mean()], 
+                             zoom_start=zoom_start, 
+                             tiles='cartodb positron')
+
+    # Add markers for each location
+    for _, row in data.iterrows():
+        folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=row['name'],
+            icon=folium.Icon(color=icon_color)
+        ).add_to(m)
+
+    # Add a title to the map
+    folium.map.Marker(
+        location=[data['latitude'].mean(), data['longitude'].mean()],
+        icon=None,
+        popup=folium.map.Popup(title),
+    ).add_to(m)
+
+    # Save the map as an HTML file
+    m.save(save_filename)
+
+# Example usage:
+# Replace 'steakhouses' with your DataFrame containing location data.
+# create_location_map(steakhouses)
