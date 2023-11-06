@@ -1,44 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def plot_stacked_vertical_bar_chart(data, 
-                               x_col, y_col1, y_col2, 
-                               x_label, y_label,
-                               title='',
-                               color1='green',color2='orange'):
-    """
-    Create a stacked vertical bar chart using Seaborn.
-
-    Parameters:
-    - data: DataFrame containing the data.
-    - x_col: Name of the column for the x-axis (e.g., 'Year').
-    - y_col1: Name of the first data column for stacking.
-    - y_col2: Name of the second data column for stacking.
-    - title: Title of the plot.
-
-    Returns:
-    - A Seaborn stacked vertical bar chart.
-    """
-    # Create the plot
-    plt.figure(figsize=(10, 6))
-    
-    sns.set(style="whitegrid")
-    
-    # Use the Seaborn barplot function to create the stacked bar chart
-    sns.barplot(x=x_col, y=y_col1, data=data, color=color1, label=y_col1)
-    sns.barplot(x=x_col, y=y_col2, data=data, color=color2, label=y_col2, bottom=data[y_col1])
-    
-    # Customize the plot
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.title(title)
-    
-    # Add a legend
-    plt.legend(title="Legend", loc="upper left")
-    
-    # Show the plot
-    plt.show()
-    
 def plot_histogram(column_data, column_name, bin=30):
     """
     Use histogram to plot distribution of a column of float values.
@@ -189,3 +151,133 @@ def create_location_map(data, zoom_start=12,
 # Example usage:
 # Replace 'steakhouses' with your DataFrame containing location data.
 # create_location_map(steakhouses)
+
+def plot_bubble_chart(data, 
+                    x_axis, y_axis, 
+                    bubble_size, color, 
+                    hover_name, 
+                    title, size_max=50, 
+                    figsize=(1000, 700),
+                    color_discrete_sequence=None, 
+                    template='plotly', 
+                    x_title=None, y_title=None, 
+                    color_continuous_scale=None,
+                    font_size=12):
+
+    fig = px.scatter(data,
+                     x=x_axis,
+                     y=y_axis,
+                     size=bubble_size,
+                     color=color,
+                     hover_name=hover_name,
+                     hover_data={x_axis: ':.2f', y_axis: True, bubble_size: True},
+                     title=title,
+                     size_max=size_max,
+                     color_discrete_sequence=color_discrete_sequence,
+                     template=template,
+                     color_continuous_scale=color_continuous_scale)
+
+    # Customize axis titles
+    fig.update_layout(
+        font=dict(
+        family="Helvetica Neue",
+        size=font_size,  # Set the font size here
+        # color="RebeccaPurple"
+    ),
+        xaxis_title=x_title if x_title else x_axis,
+        yaxis_title=y_title if y_title else y_axis,
+    )
+
+    fig.update_layout(legend = dict(font = dict(size = 11)),
+                      legend_title = dict(font = dict(size = 11)))
+    
+    fig.update_layout(
+    legend=dict(x=0.5, y=-0.2, xanchor='center', yanchor='top'), # Adjust y to move legend inside subplot
+    legend_orientation='h'
+)
+    # fig.update_layout(width=figsize[0], height=figsize[1], autosize=True)
+    fig.update_layout(autosize=True)
+    fig.write_html("./demo_plots/bb_chart.html")
+    fig.show()
+
+def plot_stacked_vertical_bar_chart(data, 
+                               x_col, y_col1, y_col2, 
+                               x_label, y_label,
+                               title='',
+                               color1='green',color2='orange'):
+    """
+    Create a stacked vertical bar chart using Seaborn.
+
+    Parameters:
+    - data: DataFrame containing the data.
+    - x_col: Name of the column for the x-axis (e.g., 'Year').
+    - y_col1: Name of the first data column for stacking.
+    - y_col2: Name of the second data column for stacking.
+    - title: Title of the plot.
+
+    Returns:
+    - A Seaborn stacked vertical bar chart.
+    """
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+    
+    sns.set(style="whitegrid")
+    
+    # Use the Seaborn barplot function to create the stacked bar chart
+    sns.barplot(x=x_col, y=y_col1, data=data, color=color1, label=y_col1)
+    sns.barplot(x=x_col, y=y_col2, data=data, color=color2, label=y_col2, bottom=data[y_col1])
+    
+    # Customize the plot
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
+    
+    # Add a legend
+    plt.legend(title="", loc="upper left")
+    plt.savefig("./demo_plots/stacked_bar_chart.svg", format='svg')
+    
+    # Show the plot
+    plt.show()
+
+def plot_bar_and_line_chart(data, col_bar_y1, col_line_y2, col_x, 
+                            y1_label="", y2_label="", x_label="",
+                            title="",
+                            bar_color="b", line_color="r",
+                            figsize=(10, 6)):
+
+    # Extract the years, number of ratings, and average star values from the data
+    x = data[col_x]
+    bar_y1 = data[col_bar_y1]
+    line_y2 = data[col_line_y2]
+
+    # Create a figure and axis for the plot
+    fig, ax1 = plt.subplots(figsize=figsize)
+
+    # Bar chart:
+    ax1.bar(x=x, height=bar_y1, color=bar_color, alpha=0.5, label=y1_label)
+    ax1.set_xlabel(x_label)
+    ax1.set_ylabel(y1_label)
+    ax1.tick_params(axis='y')
+    
+    
+    # Create a second y-axis for the line chart
+    ax2 = ax1.twinx()
+
+    # Line chart:
+    ax2.plot(x, line_y2, color=line_color, marker='o', label=y2_label)
+    ax2.set_ylabel(y2_label)
+    ax2.grid(visible=False)
+
+    # Add a legend
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper left")
+
+    # Set the title and x-axis label
+    plt.title(title)
+    plt.xlabel('Year')
+    ax2.set_ylim(top=5, bottom=0)
+    plt.savefig("./demo_plots/bar_line_chart.svg", format='svg')
+
+    # Show the plot
+    plt.show()
