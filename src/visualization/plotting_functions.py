@@ -278,6 +278,9 @@ def plot_bar_and_line_chart(data, col_bar_y1, col_line_y2, col_x,
     plt.xlabel('Year')
     ax2.set_ylim(top=5, bottom=0)
     plt.savefig("./demo_plots/bar_line_chart.svg", format='svg')
+    
+    # save .html file
+    # plt.write_html(save_filename, auto_open=False)
 
     # Show the plot
     plt.show()

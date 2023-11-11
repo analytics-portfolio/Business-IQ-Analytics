@@ -1,3 +1,15 @@
+import pandas as pd
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from afinn import Afinn
+
+from nltk.util import ngrams
+from collections import Counter
+
+stop_words = set(stopwords.words('english'))
+
+
 def calculate_sentiment(review_column):
     # Tokenize and preprocess the review text
     def preprocess_text(text):
@@ -44,6 +56,7 @@ def categorize_sentiment(score):
         return 'negative'
     else:
         return 'neutral'
+
 
 def count_bigrams(df, text_col):
     # Tokenize the text and create bigrams
