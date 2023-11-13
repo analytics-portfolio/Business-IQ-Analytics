@@ -9,6 +9,16 @@ yelp_csv/yelp_user.csv
 credential_files/.ipynb_checkpoints/api_keys-checkpoint.txt
 credential_files/api_keys.txt
 
-.DS_Store
-.DS_Store
+
 data/.DS_Store
+*.pyc
+*.csv
+*.json
+*.DS_Store
+
+.DS_Store
+*.pyc
+*.csv
+*.json
+.DS_Store
+*.csv

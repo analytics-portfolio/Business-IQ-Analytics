@@ -1,44 +1,102 @@
 import pandas as pd
 import numpy as np
 
+import dash
+from dash.dependencies import Input, Output
+from dash import html, dcc
 
 import plotly.express as px
 import plotly.graph_objects as go
 
-import dash
-import dash_core_components as dcc
-from dash import html
-from dash.dependencies import Input, Output
+import sys
+# sys.path.append('../data_manipulation/')
+# from data_manipulation import *
 
-from functions_for_analysis.plotting_functions import *
-from functions_for_analysis.data_analysis_function import *
-
-app = dash.Dash(__name__)
 steakhouses_dir = "../data/demo_data/steakhouses.pkl"
 reviews_dir =  "../data/demo_data/reviews_steak.pkl"
 
-# Import Data
-steakhouses = load_df_from_pickle(steakhouses_dir)
-reviews = load_df_from_pickle(reviews_dir)
+app = dash.Dash(__name__)
 
+# Import Data
+# steakhouses = load_df_from_pickle(steakhouses_dir)
+# reviews = load_df_from_pickle(reviews_dir)
+
+reviews = pd.read_pickle("https://github.com/analytics-portfolio/Business-IQ-Analytics/blob/main/data/demo_data/reviews_steak.pkl?raw=true")
+
+# Initialize the Dash app
+app = dash.Dash(__name__)
+
+# Define the layout of the app
 app.layout = html.Div([
-    dcc.Graph(
-        id='interactive-graph',
-        figure=px.scatter(x=[1, 2, 3, 4], y=[10, 11, 12, 13])
-    )
+    # Split the screen into two vertical spaces
+    html.Div([
+        # Left side with 4 quadrants
+        html.Div([
+            # Upper left quadrant - Stacked Bar Chart (Placeholder)
+            dcc.Graph(id='stacked-bar-chart'),
+
+            # Lower left quadrant - Bar and Line Chart (Placeholder)
+            dcc.Graph(id='bar-line-chart')
+        ], style={'width': '50%', 'display': 'inline-block'}),
+
+        # Right side - Bubble Chart
+        html.Div([
+            dcc.Graph(
+                id='bubble-chart',
+                figure=plot_bubble_chart(data)  # Assuming your function returns a Figure object
+            )
+        ], style={'width': '50%', 'display': 'inline-block'}),
+    ])
 ])
 
-# @app.callback(
-#     Output('interactive-graph', 'figure'),
-#     [Input('dropdown-menu', 'value')]  # Add inputs based on your design
-# )
-# def update_graph(selected_value):
-#     # Modify the figure based on user input
-#     # Update the 'figure' property of the graph accordingly
-#     # Example: filtered_data = your_data[your_data['column'] == selected_value]
-#     return px.scatter(filtered_data, x='x_column', y='y_column')
+# Define callbacks to update graphs if necessary
+@app.callback(
+    Output('stacked-bar-chart', 'figure'),
+    [Input('input-component', 'value')]  # Example of an input component
+)
+def update_stacked_bar_chart(value):
+    # Logic to update stacked bar chart
+    # Placeholder for demo
+    return px.bar(data, x="x-axis", y="y-axis", color="category")
+
+@app.callback(
+    Output('bar-line-chart', 'figure'),
+    [Input('input-component', 'value')]  # Example of an input component
+)
+def update_bar_line_chart(value):
+    # Logic to update bar and line chart
+    # Placeholder for demo
+    return px.bar(data, x="x-axis", y="y-axis")
+
+# Assuming your bubble chart function is defined elsewhere:
+# def plot_bubble_chart(data):
+#     ...
+
+### BUBBLE CHART DATA
+top_7_num_reviewed = reviews[['name']].value_counts().head(7)
+
+top_7_num_reviewed = [i[0] for i in top_7_num_reviewed.index]
+
+bb_chart = {
+    'Restaurant': [],
+    'Average_Star_Rating': [],
+    'Number_of_Reviews': [],
+    'Years_of_Operation': []
+}
+for r in top_7_num_reviewed:
+    bb_chart['Restaurant'].append(r)
+    data = reviews.loc[reviews['name'] == r]
+    avg_rating = sum(data['stars_x'])/len(data['stars_x'])
+    bb_chart['Average_Star_Rating'].append(round(avg_rating, 3))
+
+    num_rev = len(data['stars_x'])
+    bb_chart['Number_of_Reviews'].append(num_rev)
+
+    year_op = max(data.dt_year) - min(data.dt_year)
+    bb_chart['Years_of_Operation'].append(year_op)
 
 
-# Main function
+# Run the app
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8080)
+    
+    app.run_server(debug=True)

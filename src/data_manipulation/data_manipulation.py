@@ -6,32 +6,43 @@ import os
 
 
 ### LOAD DATA ###
-def save_df_to_pickle(dataframe, filename):
-    """
-    Save a DataFrame to a pickle file.
 
-    Parameters:
-    - dataframe (pd.DataFrame): The DataFrame to be saved.
-    - filename (str): The name of the pickle file (including file extension).
+def save_data_to_pickle(data, file_path):
+    """
+    Save data to a file using pickle.
+
+    Args:
+        data: The data to be saved.
+        file_path (str): The file path where the data will be saved.
 
     Returns:
-    - None
+        bool: True if the data was successfully saved, False otherwise.
     """
-    with open(filename, 'wb') as file:
-        pickle.dump(dataframe, file)
+    try:
+        with open(file_path, 'wb') as file:
+            pickle.dump(data, file)
+        return True
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return False
 
-def load_df_from_pickle(filename):
+def load_data_from_pickle(file_path):
     """
-    Load a DataFrame from a pickle file.
+    Load data from a pickle file.
 
-    Parameters:
-    - filename (str): The name of the pickle file to load.
+    Args:
+        file_path (str): The file path from which to load the data.
 
     Returns:
-    - pd.DataFrame: The loaded DataFrame.
+        object: The loaded data.
     """
-    with open(filename, 'rb') as file:
-        loaded_dataframe = pickle.load(file)
-    return loaded_dataframe
+    try:
+        with open(file_path, 'rb') as file:
+            loaded_data = pickle.load(file)
+        return loaded_data
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return None
+
 
 ### LOAD JSON TO CSV ###
