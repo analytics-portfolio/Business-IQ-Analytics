@@ -15,10 +15,8 @@ data/.DS_Store
 *.csv
 *.json
 *.DS_Store
-
-.DS_Store
+**/*.ipynb_checkpoints/ 
+.ipynb_checkpoints
+.env
+.cache
 *.pyc
-*.csv
-*.json
-.DS_Store
-*.csv

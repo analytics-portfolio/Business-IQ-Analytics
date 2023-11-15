@@ -45,4 +45,28 @@ def load_data_from_pickle(file_path):
         return None
 
 
-### LOAD JSON TO CSV ###
+### LOAD EXCEL TO DF ###
+
+def load_excel_to_dataframe(file_path, sheet_name=None):
+    """
+    Load data from an Excel file into a Pandas DataFrame.
+
+    Args:
+        file_path (str): The file path of the Excel file to be loaded.
+        sheet_name (str or int, optional): The name or index of the sheet to read from. Defaults to the first sheet.
+
+    Returns:
+        pd.DataFrame: The loaded data as a Pandas DataFrame.
+    """
+    try:
+        if sheet_name is None:
+            # Load the first sheet by default
+            df = pd.read_excel(file_path)
+        else:
+            # Load a specific sheet
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+        return df
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return None
+

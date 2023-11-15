@@ -1,73 +1,42 @@
-import dash
-from dash import dcc, html
-from dash.dependencies import Input, Output
-import pandas as pd
-import pickle
+from dash import Dash, Input, Output, html, dcc, callback # need version dash 2.0.0 or higher
+# import plotly.express as px
+# import pandas as pd
+import dash_bootstrap_components as dbc
 
-# Load the data from the .pkl file
-# with open('reviews_steak.pkl', 'rb') as f:
-#     data = pickle.load(f)
+app = Dash(__name__, external_stylesheets=[dbc.themes.SOLAR])
 
-data = pd.read_pickle("https://github.com/analytics-portfolio/Business-IQ-Analytics/blob/main/data/demo_data/reviews_steak.pkl?raw=true")
+app.layout = dbc.Container([
+    dbc.Row([
+        dbc.Col([
+            html.H1("Our Cool Analytics Dashboard", style={"textAlign":"center"})
+        ],width=12)
+    ]),
+    dbc.Row([
+        dbc.Col([
+            dbc.Carousel(
+                items=[
+                    {"key": "1", "src": "/assets/Chapulin1.jpg", "caption":"My cat captions", "img_style":{"max-height":"500px"}},
+                    {"key": "2", "src": "/assets/Chapulin2.jpg", "header":"My cat header", "img_style":{"max-height":"500px"}},
+                    {"key": "3", "src": "/assets/Chapulin3.jpg", "img_style":{"max-height":"500px"}},
+                ],
+                controls=True,
+                indicators=True,
+                interval=2000,
+                ride="carousel",
+#                 className="carousel-fade"
+            )
+        ], width=8)
+    ], justify="center"),
+    html.Br(),
+    dbc.Row([
+        dbc.Col([
+            html.H2("All my graphs and charts below", style={"textAlign":"center"}),
+            dcc.Graph(figure={})
+        ],width=12)    
+    ])
 
-# Initialize the Dash app
-app = dash.Dash(__name__)
-
-# Define the layout of the dashboard
-app.layout = html.Div([
-    # Top Toggle Dropdown for selecting the "Name"
-    dcc.Dropdown(
-        id='name-dropdown',
-        options=[{'label': name, 'value': name} for name in data['Name'].unique()],
-        value=data['Name'].unique()[0],  # Set default value
-    ),
-
-    # Left side of the dashboard with 4 quadrants
-    html.Div([
-        html.Div([
-            dcc.Graph(id='stacked-bar-chart')
-        ], className='six columns'),
-
-        html.Div([
-            dcc.Graph(id='bar-line-chart')
-        ], className='six columns')
-    ], className='row'),
-
-    # Right side of the dashboard with folium map and bubble chart
-    html.Div([
-        html.Div([
-            dcc.Graph(id='folium-map')
-        ], className='six columns'),
-
-        html.Div([
-            dcc.Graph(id='bubble-chart')
-        ], className='six columns')
-    ], className='row')
 ])
 
-# Define callback functions to update graphs based on dropdown selection
-@app.callback(
-    [Output('stacked-bar-chart', 'figure'),
-     Output('bar-line-chart', 'figure'),
-     Output('folium-map', 'figure'),
-     Output('bubble-chart', 'figure')],
-    [Input('name-dropdown', 'value')]
-)
-def update_graphs(selected_name):
-    # Create and update the figures based on the selected "Name"
-    # You'll need to define the logic for each graph here
 
-    # Example: Create a dummy figure for the stacked bar chart
-    stacked_bar_chart_figure = {
-        'data': [{'x': [1, 2, 3], 'y': [10, 20, 30], 'type': 'bar', 'name': 'Trace 1'},
-                 {'x': [1, 2, 3], 'y': [5, 10, 15], 'type': 'bar', 'name': 'Trace 2'}],
-        'layout': {'title': f'Stacked Bar Chart for {selected_name}'}
-    }
-
-    # Repeat the above for other charts (bar-line chart, folium map, bubble chart)
-
-    return stacked_bar_chart_figure, bar_line_chart_figure, folium_map_figure, bubble_chart_figure
-
-# Run the Dash app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False, port=8000)
